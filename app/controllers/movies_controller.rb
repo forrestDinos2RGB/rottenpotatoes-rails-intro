@@ -13,9 +13,23 @@ class MoviesController < ApplicationController
   def index
     @title_highlight = 'none'
     @date_highlight = 'none'
+    @all_ratings = Movie.uniq.pluck(:rating)
     
+    #checks whether 'date' or 'title' has been clicked
     clicked = params[:sorted]
     puts "#{clicked} has been clicked"
+    
+    #Does cookies already contained clicked fields from previous browsing experience?
+    @movies = Movie.all
+    if session[:all_keys] == nil and params[:ratings] == nil
+      @movies = Movie.all
+    elsif params[:ratings]
+      @movies = @movies.where(rating: params[:ratings].keys)
+      session[:all_keys] = params[:ratings].keys
+    else
+      @movies = @movies.where(rating: session[:all_keys])
+    end
+    
     if clicked == 'title'
       @title_highlight = 'hilite'
       session[:sort] = 'title'
@@ -30,19 +44,20 @@ class MoviesController < ApplicationController
     
     if session[:sort] == nil
       puts 'no sorting occured'
-      @movies = Movie.all
+      # @movies = Movie.all
     elsif session[:sort] == 'title'
       puts 'sorting by title'
       #sort the movies by title
-      @movies = Movie.order(:title)
+      @movies = @movies.order(:title)
     else
       puts 'sorting by date'
       puts #sort the movies by release date
-      @movies = Movie.order(:release_date)
+      @movies = @movies.order(:release_date)
     end 
     
     @title_highlight = 'hilite' if session[:highlight] == 'title'
     @date_highlight = 'hilite' if session[:highlight] == 'date'
+    
   end
 
   def new
