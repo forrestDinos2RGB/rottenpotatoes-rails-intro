@@ -13,6 +13,7 @@ class MoviesController < ApplicationController
   def index
     @title_highlight = 'none'
     @date_highlight = 'none'
+<<<<<<< HEAD
     @all_ratings = Movie.uniq.pluck(:rating)
     
     #checks whether 'date' or 'title' has been clicked
@@ -32,6 +33,11 @@ class MoviesController < ApplicationController
       @movies = @movies.where(rating: session[:all_keys])
     end
     
+=======
+    
+    clicked = params[:sorted]
+    puts "#{clicked} has been clicked"
+>>>>>>> 53a8ea5... completed part1
     if clicked == 'title'
       @title_highlight = 'hilite'
       session[:sort] = 'title'
@@ -46,6 +52,7 @@ class MoviesController < ApplicationController
     
     if session[:sort] == nil
       puts 'no sorting occured'
+<<<<<<< HEAD
       # @movies = Movie.all
     elsif session[:sort] == 'title'
       puts 'sorting by title'
@@ -55,11 +62,25 @@ class MoviesController < ApplicationController
       puts 'sorting by date'
       puts #sort the movies by release date
       @movies = @movies.order(:release_date)
+=======
+      @movies = Movie.all
+    elsif session[:sort] == 'title'
+      puts 'sorting by title'
+      #sort the movies by title
+      @movies = Movie.order(:title)
+    else
+      puts 'sorting by date'
+      puts #sort the movies by release date
+      @movies = Movie.order(:release_date)
+>>>>>>> 53a8ea5... completed part1
     end 
     
     @title_highlight = 'hilite' if session[:highlight] == 'title'
     @date_highlight = 'hilite' if session[:highlight] == 'date'
+<<<<<<< HEAD
     
+=======
+>>>>>>> 53a8ea5... completed part1
   end
 
   def new
