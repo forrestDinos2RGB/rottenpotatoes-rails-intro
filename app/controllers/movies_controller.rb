@@ -11,7 +11,38 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    @title_highlight = 'none'
+    @date_highlight = 'none'
+    
+    clicked = params[:sorted]
+    puts "#{clicked} has been clicked"
+    if clicked == 'title'
+      @title_highlight = 'hilite'
+      session[:sort] = 'title'
+      session[:highlight] = 'title' 
+      #store in sessions that this linked has been clicked
+    elsif clicked == 'date'
+      @date_highlight = 'hilite'
+      session[:sort] = 'date'
+      session[:highlight] = 'date'
+      #store in sessions that this linked has been clicked
+    end
+    
+    if session[:sort] == nil
+      puts 'no sorting occured'
+      @movies = Movie.all
+    elsif session[:sort] == 'title'
+      puts 'sorting by title'
+      #sort the movies by title
+      @movies = Movie.order(:title)
+    else
+      puts 'sorting by date'
+      puts #sort the movies by release date
+      @movies = Movie.order(:release_date)
+    end 
+    
+    @title_highlight = 'hilite' if session[:highlight] == 'title'
+    @date_highlight = 'hilite' if session[:highlight] == 'date'
   end
 
   def new
