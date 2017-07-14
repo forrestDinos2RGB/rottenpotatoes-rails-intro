@@ -17,49 +17,50 @@ class MoviesController < ApplicationController
     
     # set @all_ratings to be all ratings
     @all_ratings = Movie.uniq.pluck(:rating)
+
+    #redirect packaging
+    @redirect_enable = false
+    @params_package = {}
     
     #expect params[:ratings] and session[:all_keys] to be both nil
     puts "expect #{params[:ratings]} and #{session[:all_keys]} to be both nil"
     
     #default logic for first time visiting website
-    if params[:ratings] == nil && session[:all_keys] == nil
+    if params[:ratings] == nil && session[:ratings] == nil
       params[:ratings] = {"G"=>"1", "R"=>"1", "PG-13" => 1, "PG" => 1}
       puts "first time visiting website"
       puts "expect all ratings: #{params[:ratings]}, and nothing to be clicked #{session[:all_keys]}"
     end
-    
+
+    #Did user check any of the checkbox in form tag?
+    if params[:ratings] == nil
+      @redirect_enable = true
+      #update the params package in case nothing has been passed
+      params_package[:ratings] = session[:ratings]
+    else
+      #update the cookie
+      session[:ratings] = params[:ratings]
+    end
+
+    #Did user click on either title or ratings?
     clicked = params[:sorted]
-    puts "#{clicked} has been clicked"
     if clicked == 'title'
       @title_highlight = 'hilite'
-      session[:sort] = 'title'
-      session[:highlight] = 'title' 
-      #store in sessions that this linked has been clicked
+      session[:sorted] = 'title'
     elsif clicked == 'date'
       @date_highlight = 'hilite'
-      session[:sort] = 'date'
-      session[:highlight] = 'date'
-      #store in sessions that this linked has been clicked
-    end
-    
-    if session[:sort] == nil
-      puts 'no sorting occured'
-      @movies = Movie.all
-    elsif session[:sort] == 'title'
-      puts 'sorting by title'
-      #sort the movies by title
-      @movies = Movie.order(:title)
+      session[:sorted] = 'date'
     else
-      puts 'sorting by date'
-      puts #sort the movies by release date
-      @movies = Movie.order(:release_date)
-    end 
-    
-    @title_highlight = 'hilite' if session[:highlight] == 'title'
-    @date_highlight = 'hilite' if session[:highlight] == 'date'
-    
+      @redirect_enable = true
+      params_package[:sorted]
+    end
+
+    if @redirect_enable
+      redirect_to movies_path(@params_package)
+    end
+
     @params_ratings = params[:ratings].keys
-  end
+  end 
 
   def new
     # default: render 'new' template
