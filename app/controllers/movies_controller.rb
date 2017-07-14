@@ -26,6 +26,8 @@ class MoviesController < ApplicationController
     elsif params[:ratings]
       @movies = @movies.where(rating: params[:ratings].keys)
       session[:all_keys] = params[:ratings].keys
+      # 80.times{ print '*'}
+      # puts session[:all_keys]
     else
       @movies = @movies.where(rating: session[:all_keys])
     end
