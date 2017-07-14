@@ -11,8 +11,22 @@ class MoviesController < ApplicationController
   end
 
   def index
+    #Set initial class of link to be none unless clicked
     @title_highlight = 'none'
     @date_highlight = 'none'
+    
+    # set @all_ratings to be all ratings
+    @all_ratings = Movie.uniq.pluck(:rating)
+    
+    #expect params[:ratings] and session[:all_keys] to be both nil
+    puts "expect #{params[:ratings]} and #{session[:all_keys]} to be both nil"
+    
+    #default logic for first time visiting website
+    if params[:ratings] == nil && session[:all_keys] == nil
+      params[:ratings] = {"G"=>"1", "R"=>"1", "PG-13" => 1, "PG" => 1}
+      puts "first time visiting website"
+      puts "expect all ratings: #{params[:ratings]}, and nothing to be clicked #{session[:all_keys]}"
+    end
     
     clicked = params[:sorted]
     puts "#{clicked} has been clicked"
@@ -43,6 +57,8 @@ class MoviesController < ApplicationController
     
     @title_highlight = 'hilite' if session[:highlight] == 'title'
     @date_highlight = 'hilite' if session[:highlight] == 'date'
+    
+    @params_ratings = params[:ratings].keys
   end
 
   def new
