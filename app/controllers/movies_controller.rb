@@ -38,27 +38,43 @@ class MoviesController < ApplicationController
       puts "first time visiting website"
       puts "expect all ratings: #{params[:ratings]}, and nothing to be clicked #{session[:ratings]}"
     end
-
+    
+    
+    # #WEIRD LOGIC
+    # #Did user check any of the checkbox in form tag?
+    # if params[:ratings] == nil
+    #   @redirect_enable = true
+    #   #update the params package in case nothing has been passed
+    #   @params_package[:ratings] = session[:ratings]
+    # else
+    #   #update the cookie
+    #   session[:ratings] = params[:ratings]
+    #   #filter the movies
+    #   @movies = @movies.where({"rating" => params[:ratings].keys})
+    # end
+    # #WEIRD LOGIC
+    
+    #NEW LOGIC
     #Did user check any of the checkbox in form tag?
-    if params[:ratings] == nil
-      @redirect_enable = true
-      #update the params package in case nothing has been passed
-      @params_package[:ratings] = session[:ratings]
-    else
+    if params[:ratings]
       #update the cookie
       session[:ratings] = params[:ratings]
+      @movies = @movies.where({"rating" => params[:ratings].keys})
+    else
+      @movies = @movies.where({"rating" => nil})
     end
+    #NEW LOGIC
 
     #Did user click on either title or ratings?
     clicked ||= params[:sorted]
     if clicked == 'title'
       @title_highlight = 'hilite'
       session[:sorted] = 'title'
-      @movies = @movies.where(params[:ratings].keys).order(:title)
+      @movies = @movies.order(:title)
     elsif clicked == 'date'
       @date_highlight = 'hilite'
       session[:sorted] = 'date'
-      @movies = @movies.where(params[:ratings.keys]).order(:release_date)
+      @movies = @movies.order(:release_date)
     elsif clicked == 'none'
       puts "neither title nor rating has been clicked"
       session[:sorted] = 'none'
@@ -71,10 +87,14 @@ class MoviesController < ApplicationController
       #update the params package when redirecting
       @params_package[:sorted] = session[:sorted]
       #update the params package when redirecting
-      @params_package[:ratings] = session[:ratings]
+      @params_package[:ratings] = params[:ratings]
       redirect_to movies_path(@params_package)
     else
-      @params_ratings = params[:ratings].keys
+      if params[:ratings]
+        @params_ratings = params[:ratings].keys
+      else
+        @params_ratings = []
+      end 
     end 
   end 
 
