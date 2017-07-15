@@ -61,7 +61,14 @@ class MoviesController < ApplicationController
       session[:ratings] = params[:ratings]
       @movies = @movies.where({"rating" => params[:ratings].keys})
     else
-      @movies = @movies.where({"rating" => nil})
+      #if user didn't check anything, there are two possible scenarios
+      # 1. nothing is in the checkbox
+      # 2. user simply did not check anything
+      if session[:ratings] && params[:ratings] == nil
+        @movies = @movies.where({"rating" => nil})
+      else
+        @movies = @movies.where({"rating" => session[:ratings].keys})
+      end
     end
     #NEW LOGIC
 
