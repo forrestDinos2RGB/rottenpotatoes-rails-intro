@@ -42,7 +42,7 @@ class MoviesController < ApplicationController
     
     # #WEIRD LOGIC
     # #Did user check any of the checkbox in form tag?
-    # if params[:ratings] == nil
+    # if params[:ratings] == nil && params[:ratings] == session[:ratings]
     #   @redirect_enable = true
     #   #update the params package in case nothing has been passed
     #   @params_package[:ratings] = session[:ratings]
