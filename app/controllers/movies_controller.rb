@@ -73,9 +73,9 @@ class MoviesController < ApplicationController
       #update the params package when redirecting
       @params_package[:ratings] = session[:ratings]
       redirect_to movies_path(@params_package)
-    end
-
-    @params_ratings = params[:ratings].keys
+    else
+      @params_ratings = params[:ratings].keys
+    end 
   end 
 
   def new
